@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mini Paint 🎨</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            text-align: center;
+            background: #f0f0f0;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        h1 {
+            margin: 20px 0 10px;
+        }
+
+        .toolbar {
+            margin-bottom: 10px;
+        }
+
+        #colorPicker, #clearBtn {
+            padding: 8px 12px;
+            margin: 5px;
+            font-size: 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        #clearBtn {
+            background-color: #ff4d4d;
+            color: white;
+        }
+
+        #drawingCanvas {
+            border: 2px solid #000;
+            background: #fff;
+            display: block;
+            margin: 0 auto;
+            touch-action: none;
+        }
+    </style>
+</head>
+<body>
+    <h1>Mini Paint 🎨</h1>
+    <div class="toolbar">
+        <input type="color" id="colorPicker" value="#000000">
+        <button id="clearBtn">Clear</button>
+    </div>
+    <canvas id="drawingCanvas"></canvas>
+
+    <script>
+        const canvas = document.getElementById('drawingCanvas');
+        const ctx = canvas.getContext('2d');
+        const colorPicker = document.getElementById('colorPicker');
+        const clearBtn = document.getElementById('clearBtn');
+
+        canvas.width = window.innerWidth * 0.9;
+        canvas.height = window.innerHeight * 0.7;
+
+        let drawing = false;
+        let color = colorPicker.value;
+
+        colorPicker.addEventListener('input', () => {
+            color = colorPicker.value;
+        });
+
+        clearBtn.addEventListener('click', () => {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        });
+
+        function startDrawing(e) {
+            drawing = true;
+            draw(e);
+        }
+
+        function stopDrawing() {
+            drawing = false;
+            ctx.beginPath();
+        }
+
+        function draw(e) {
+            if (!drawing) return;
+
+            ctx.lineWidth = 3;
+            ctx.lineCap = 'round';
+            ctx.strokeStyle = color;
+
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX ? e.clientX - rect.left : e.touches[0].clientX - rect.left;
+            const y = e.clientY ? e.clientY - rect.top : e.touches[0].clientY - rect.top;
+
+            ctx.lineTo(x, y);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(x, y);
+        }
+
+        // Mouse Events
+        canvas.addEventListener('mousedown', startDrawing);
+        canvas.addEventListener('mouseup', stopDrawing);
+        canvas.addEventListener('mousemove', draw);
+
+        // Touch Events
+        canvas.addEventListener('touchstart', startDrawing);
+        canvas.addEventListener('touchend', stopDrawing);
+        canvas.addEventListener('touchmove', draw);
+    </script>
+</body>
+</html>
